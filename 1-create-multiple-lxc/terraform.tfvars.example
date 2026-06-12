@@ -1,0 +1,8 @@
+pm_api_url          = "https://192.168.30.2:8006/api2/json"
+pm_default          = "pve"
+pm_user             = "root@pam"
+pm_password         = "password"
+pm_tls_insecure     = true
+lxc_sshkey          = ""
+lxc_id_start_from   = 3010
+lxc_total_duplicate = 5
