@@ -1,0 +1,16 @@
+# Terraform Variable
+*.tfvars
+*.tfvars*
+!terraform.tfvars.example
+
+# Terraform State
+.tfstate
+*.tfstate
+*.tfstate*
+*tfstate*
+
+.terraform.lock.hcl
+/*/.terraform
+
+/1-create-multiple-lxc/id_rsa
+/1-create-multiple-lxc/id_rsa.*
