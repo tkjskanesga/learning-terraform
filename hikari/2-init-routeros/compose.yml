@@ -1,0 +1,55 @@
+# Source: https://github.com/tkjskanesga/mikrotik-for-docker
+services:
+  chr-mikrotik-r1:
+    image: ghcr.io/tkjskanesga/mikrotik-on-docker:latest
+    container_name: chr-mikrotik-r1
+    privileged: true
+    environment:
+      - RAM=256M
+      - CPU=1
+      - LINK_ETHER=r1 # r1 = (R1 > R2)
+    ports:
+      - "4000:8728"
+      - "4001:8291"
+      - "4002:80"
+    volumes:
+      - ./router/1:/storage
+    networks:
+      - routeros-network
+
+  chr-mikrotik-r2:
+    image: ghcr.io/tkjskanesga/mikrotik-on-docker:latest
+    container_name: chr-mikrotik-r2
+    privileged: true
+    environment:
+      - RAM=256M
+      - CPU=1
+      - LINK_ETHER=r1,r2 # r1 = (R2 > R1), r2 = (R2 > R3)
+    ports:
+      - "4100:8728"
+      - "4101:8291"
+      - "4102:80"
+    volumes:
+      - ./router/2:/storage
+    networks:
+      - routeros-network
+
+  chr-mikrotik-r3:
+    image: ghcr.io/tkjskanesga/mikrotik-on-docker:latest
+    container_name: chr-mikrotik-r3
+    privileged: true
+    environment:
+      - RAM=256M
+      - CPU=1
+      - LINK_ETHER=r2 # r2 = (R3 > R2)
+    ports:
+      - "4200:8728"
+      - "4201:8291"
+      - "4202:80"
+    volumes:
+      - ./router/3:/storage
+    networks:
+      - routeros-network
+
+networks:
+  routeros-network:
