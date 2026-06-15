@@ -1,0 +1,3 @@
+kubeconfig_path = "../1-setup-k3s/kubeconfig.yaml"
+app_image       = "ernestoyoofi/go-hello:latest"
+app_replicas    = 2
