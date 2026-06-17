@@ -18,7 +18,7 @@ vm_subnet             = "192.168.30"
 vm_ip_start           = 150
 vm_gateway            = "192.168.30.1"
 vm_cidr               = "/23"
-vm_vlan_tag           = 30
+# vm_vlan_tag           = 30   # optional, uncomment to set VLAN tag
 
 vm_ci_user            = "ubuntu"
 vm_ci_password        = "ubuntu"

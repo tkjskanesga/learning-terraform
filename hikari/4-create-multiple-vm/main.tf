@@ -83,7 +83,7 @@ variable "vm_cidr" {
 }
 variable "vm_vlan_tag" {
   type    = number
-  default = 30
+  default = null
 }
 
 provider "proxmox" {
@@ -91,6 +91,10 @@ provider "proxmox" {
   pm_user        = var.pm_user
   pm_password    = var.pm_password
   pm_tls_insecure = var.pm_tls_insecure
+}
+
+locals {
+  proxmox_host = split(":", split("/", split("://", var.pm_api_url)[1])[0])[0]
 }
 
 resource "proxmox_vm_qemu" "cloud" {
@@ -112,7 +116,7 @@ resource "proxmox_vm_qemu" "cloud" {
   scsihw      = "virtio-scsi-pci"
   boot        = "order=scsi0"
 
-  tags        = "terraform;cloud-init;vlan-${var.vm_vlan_tag}"
+  tags        = var.vm_vlan_tag != null ? "terraform;cloud-init;vlan-${var.vm_vlan_tag}" : "terraform;cloud-init"
 
   disks {
     ide {
@@ -143,6 +147,38 @@ resource "proxmox_vm_qemu" "cloud" {
 
   ciuser     = var.vm_ci_user
   cipassword = var.vm_ci_password
+  sshkeys    = try(file("${path.module}/id_rsa.pub"), "")
+}
 
-  sshkeys = file("./id_rsa.pub")
+resource "null_resource" "enable_password_auth" {
+  count = var.vm_total_duplicate
+
+  depends_on = [proxmox_vm_qemu.cloud]
+
+  triggers = {
+    vmid = var.vm_id_start_from + count.index
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["PowerShell", "-Command"]
+    command = <<-POWERSHELL
+      $login = curl.exe -k -s -X POST "https://${local.proxmox_host}:8006/api2/json/access/ticket" -d "username=${var.pm_user}&password=${var.pm_password}"
+      $data = $login | ConvertFrom-Json
+      $ticket = [uri]::EscapeDataString($data.data.ticket)
+      $token = $data.data.CSRFPreventionToken
+      $vmid = ${var.vm_id_start_from + count.index}
+
+      Write-Output "Waiting for VM $vmid agent..."
+      do {
+        Start-Sleep -Seconds 3
+        $resp = curl.exe -k -s -b "PVEAuthCookie=$ticket" -H "CSRFPreventionToken: $token" "https://${local.proxmox_host}:8006/api2/json/nodes/${var.pm_default}/qemu/$vmid/agent/ping"
+        $ok = try { ($resp | ConvertFrom-Json).data.result -eq 0 } catch { $false }
+      } while (-not $ok)
+
+      Write-Output "Enabling PasswordAuthentication on VM $vmid..."
+      curl.exe -k -s -b "PVEAuthCookie=$ticket" -H "CSRFPreventionToken: $token" -X POST "https://${local.proxmox_host}:8006/api2/json/nodes/${var.pm_default}/qemu/$vmid/agent/exec" -H "Content-Type: application/json" -d '{"command":"sed","args":["-i","s/.*PasswordAuthentication.*/PasswordAuthentication yes/","/etc/ssh/sshd_config"]}' | Out-Null
+      curl.exe -k -s -b "PVEAuthCookie=$ticket" -H "CSRFPreventionToken: $token" -X POST "https://${local.proxmox_host}:8006/api2/json/nodes/${var.pm_default}/qemu/$vmid/agent/exec" -H "Content-Type: application/json" -d '{"command":"systemctl","args":["restart","sshd"]}' | Out-Null
+      Write-Output "Done for VM $vmid!"
+    POWERSHELL
+  }
 }

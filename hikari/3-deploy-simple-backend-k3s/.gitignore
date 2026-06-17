@@ -10,5 +10,7 @@
 *tfstate*
 
 .terraform.lock.hcl
-/*/*/.terraform
-cloud-init-user.yaml
+/*/.terraform
+
+/1-create-multiple-lxc/id_rsa
+/1-create-multiple-lxc/id_rsa.*

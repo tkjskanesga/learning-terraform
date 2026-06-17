@@ -41,7 +41,7 @@ resource "null_resource" "install_k3s_master" {
     host        = var.master_ip
     user        = var.ssh_user
     password    = var.ssh_password
-    private_key = var.ssh_private_key != "" ? file(var.ssh_private_key) : null
+    private_key = try(file(var.ssh_private_key), null)
   }
 
   provisioner "remote-exec" {
@@ -66,7 +66,7 @@ resource "null_resource" "install_k3s_worker" {
     host        = var.worker_ips[count.index]
     user        = var.ssh_user
     password    = var.ssh_password
-    private_key = var.ssh_private_key != "" ? file(var.ssh_private_key) : null
+    private_key = try(file(var.ssh_private_key), null)
   }
 
   provisioner "remote-exec" {
@@ -84,7 +84,7 @@ resource "null_resource" "setup_helm" {
     host        = var.master_ip
     user        = var.ssh_user
     password    = var.ssh_password
-    private_key = var.ssh_private_key != "" ? file(var.ssh_private_key) : null
+    private_key = try(file(var.ssh_private_key), null)
   }
 
   provisioner "remote-exec" {
