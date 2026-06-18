@@ -1,26 +1,14 @@
-# ==========================================
-# VARIABLE VALUES (terraform.tfvars)
-# Sesuaikan file ini untuk environment berbeda
-# (dev, staging, prod) tanpa mengubah main.tf
-# ==========================================
-
-# --- Provider = LocalStack ---
 aws_region          = "us-east-1"
 localstack_endpoint = "http://localhost:4566"
+project_name        = "learn terraform with localstack"
 
-# --- Project ---
-project_name = "localstack"
-
-# --- VPC & Networking ---
 vpc_cidr            = "10.0.0.0/16"
 public_subnet_cidr  = "10.0.1.0/24"
 private_subnet_cidr = "10.0.2.0/24"
-availability_zone   = "us-east-1a"
 
-# --- Security Group ---
+availability_zone = "us-east-1a"
 ssh_ingress_cidr  = ["0.0.0.0/0"]
 http_ingress_cidr = ["0.0.0.0/0"]
 
-# --- EC2 ---
-ami_id        = "ami-df5de72d"
+ami_id        = "ami-7177fd63"
 instance_type = "t2.micro"

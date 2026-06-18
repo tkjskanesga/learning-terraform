@@ -1,74 +1,70 @@
-# ==========================================
-# VARIABLE DECLARATIONS
-# ==========================================
-
-# --- Provider / LocalStack ---
+# Provider LocalStack
 variable "aws_region" {
-  description = "AWS region yang digunakan"
+  description = "aws region yang digunakan"
   type        = string
   default     = "us-east-1"
 }
 
 variable "localstack_endpoint" {
-  description = "URL endpoint LocalStack untuk EC2"
+  description = "url endpoint localstack untuk ec2"
   type        = string
   default     = "http://localhost:4566"
 }
 
-# --- Project ---
+# project
 variable "project_name" {
-  description = "Nama project, digunakan sebagai suffix pada tag Name"
+  description = "nama project, digunakan sebagai suffix pada tag name"
   type        = string
   default     = "localstack"
 }
 
-# --- VPC & Networking ---
+# vpc & network
 variable "vpc_cidr" {
-  description = "CIDR block untuk VPC"
+  description = "cidr blok untuk vpc"
   type        = string
   default     = "10.0.0.0/16"
 }
 
 variable "public_subnet_cidr" {
-  description = "CIDR block untuk Public Subnet"
+  description = "cidr blok untuk public subnet"
   type        = string
   default     = "10.0.1.0/24"
 }
 
 variable "private_subnet_cidr" {
-  description = "CIDR block untuk Private Subnet"
+  description = "cidr blok untuk private subent"
   type        = string
   default     = "10.0.2.0/24"
 }
 
 variable "availability_zone" {
-  description = "Availability Zone yang digunakan untuk subnet"
+  description = "availability zone yang digunakan subnet"
   type        = string
-  default     = "us-east-1a"
+  default     = "us-east-1"
 }
 
-# --- Security Group ---
+# security group
 variable "ssh_ingress_cidr" {
-  description = "CIDR yang diizinkan mengakses port SSH (22)"
+  description = "cidr yang diizinkan untuk mengakses port ssh"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
 variable "http_ingress_cidr" {
-  description = "CIDR yang diizinkan mengakses port HTTP (80)"
+  description = "cidr yang diizinkan untuk mengakses port http"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
-# --- EC2 ---
+# ec2
 variable "ami_id" {
-  description = "AMI ID untuk EC2 instance"
+  description = "ami id untuk ec2 instance"
   type        = string
-  default     = "ami-df5de72d"
+  default     = "ami-b6389f37"
 }
 
 variable "instance_type" {
-  description = "Tipe EC2 instance"
+  description = "tipe ec2 instance"
   type        = string
   default     = "t2.micro"
 }
